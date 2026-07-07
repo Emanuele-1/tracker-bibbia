@@ -73,7 +73,14 @@
             cursor: pointer; margin-left: 10px; display: inline-block;
         }
         .admin-badge.logged { background: #27ae60; }
-        input:disabled, textarea:disabled { background: #f8f9fa; color: #7f8c8d; cursor: not-allowed; }
+        
+        /* MODIFICA QUI: Testo nero e ben leggibile anche quando è disabilitato (sola lettura) */
+        input:disabled, textarea:disabled { 
+            background: #fdfefe; 
+            color: #2c3e50; 
+            -webkit-text-fill-color: #2c3e50; /* Forza il nero anche su Safari/iOS */
+            opacity: 1; /* Rimuove la trasparenza di default dei browser */
+        }
     </style>
 </head>
 <body>
@@ -112,10 +119,9 @@
 <script>
     // --- CONFIGURAZIONE DATABASE ---
     const FIREBASE_URL = "https://tracker-biblico-default-rtdb.europe-west1.firebasedatabase.app/"; 
-    const SECRET_PASSWORD = "emanuele"; 
+    const SECRET_PASSWORD = "Emanuele"; 
     
-    // Stato dell'applicazione
-    let currentDate = new Date(); // Parte da oggi
+    let currentDate = new Date(); 
     let IS_ADMIN = false;
     let allDatabaseData = {}; 
 
@@ -186,23 +192,20 @@
 
     function renderCalendar() {
         daysContainer.innerHTML = '';
-        let dateIterator = new Date(); // Parte esattamente da OGGI
+        let dateIterator = new Date(); 
         let daysToRender = [];
 
-        // Genera gli ultimi 60 giorni a partire da oggi a ritroso
         for (let i = 0; i < 60; i++) {
             daysToRender.push(new Date(dateIterator));
             dateIterator.setDate(dateIterator.getDate() - 1);
         }
 
-        // Aggiunge all'elenco eventuali giorni salvati nel DB ancora più vecchi o futuri
         Object.keys(allDatabaseData).forEach(datePart => {
             if (!daysToRender.some(d => formatDateKey(d) === datePart)) {
                 daysToRender.push(new Date(datePart));
             }
         });
 
-        // Ordina le date dalla più recente (oggi) alla più vecchia
         daysToRender.sort((a,b) => b - a);
 
         daysToRender.forEach(date => {
@@ -217,8 +220,6 @@
             const g = date.getDate();
             const m = date.toLocaleDateString('it-IT', {month: 'short'});
             const a = date.getFullYear();
-            
-            // Ottieni il giorno della settimana (lun, mar, mer...)
             const giornoSettimana = date.toLocaleDateString('it-IT', {weekday: 'short'});
             const s = getWeekNumber(date);
 
