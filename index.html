@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracker Lettura Biblica</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #18bc9c;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container { max-width: 800px; width: 100%; }
+        h1 { text-align: center; color: var(--primary); margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 30px; }
+        .navigation {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card); padding: 15px; border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;
+        }
+        button {
+            background: var(--accent); color: white; border: none; padding: 10px 15px;
+            border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;
+        }
+        button:hover { opacity: 0.9; }
+        .current-date-display { font-size: 18px; font-weight: bold; }
+        .editor-zone {
+            background: var(--card); padding: 25px; border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;
+            position: relative;
+        }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+        input[type="text"], textarea {
+            width: 100%; padding: 12px; border: 1px solid #dce4ec;
+            border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: inherit;
+        }
+        textarea { resize: vertical; min-height: 120px; }
+        .status-saved { color: #27ae60; font-size: 14px; font-weight: bold; display: none; }
+        .calendar-preview {
+            background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .calendar-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; }
+        .days-list {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+            gap: 10px; max-height: 280px; overflow-y: auto; padding-right: 5px;
+        }
+        .day-pill {
+            background: #edf2f7; padding: 8px; border-radius: 6px; text-align: center;
+            font-size: 12px; cursor: pointer; border: 1px solid transparent;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .day-pill.active { background: var(--primary); color: white; }
+        .day-pill.has-content { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+        .week-badge, .weekday-badge { display: block; font-size: 10px; color: #7f8c8d; }
+        .weekday-badge { font-weight: 500; margin-bottom: 2px; text-transform: capitalize; }
+        .day-pill.active .week-badge, .day-pill.active .weekday-badge { color: #bdc3c7; }
+        
+        .admin-badge {
+            background: #e74c3c; color: white; padding: 3px 8px; 
+            border-radius: 20px; font-size: 11px; font-weight: bold;
+            cursor: pointer; margin-left: 10px; display: inline-block;
+        }
+        .admin-badge.logged { background: #27ae60; }
+        input:disabled, textarea:disabled { background: #f8f9fa; color: #7f8c8d; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Tracker Lettura Biblica <span id="adminBtn" class="admin-badge">🔒 Sblocca Scrittura</span></h1>
+    <div class="subtitle">Diario di lettura pubblico (Sola lettura per gli ospiti)</div>
+
+    <div class="navigation">
+        <button id="btnPrev">◀ Ieri</button>
+        <div class="current-date-display" id="dateDisplay">Caricamento...</div>
+        <button id="btnNext">Domani ▶</button>
+    </div>
+
+    <div class="editor-zone">
+        <div class="input-group">
+            <label for="inputReadings">📖 Capitoli letti oggi:</label>
+            <input type="text" id="inputReadings" placeholder="Nessuna lettura inserita" disabled>
+        </div>
+        <div class="input-group">
+            <label for="inputComment">✍️ Commento / riflessione:</label>
+            <textarea id="inputComment" placeholder="Nessun commento inserito" disabled></textarea>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <button id="btnToday" style="background: #34495e;">Vai a Oggi</button>
+            <span id="saveStatus" class="status-saved">✓ Salvato nel Cloud!</span>
+        </div>
+    </div>
+
+    <div class="calendar-preview">
+        <div class="calendar-title">Cronologia giorni passati (da oggi a ritroso):</div>
+        <div class="days-list" id="daysContainer"></div>
+    </div>
+</div>
+
+<script>
+    // --- CONFIGURAZIONE DATABASE ---
+    const FIREBASE_URL = "https://tracker-biblico-default-rtdb.europe-west1.firebasedatabase.app/"; 
+    const SECRET_PASSWORD = "emanuele"; 
+    
+    // Stato dell'applicazione
+    let currentDate = new Date(); // Parte da oggi
+    let IS_ADMIN = false;
+    let allDatabaseData = {}; 
+
+    function getWeekNumber(d) {
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+        return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+    }
+
+    function formatDateKey(date) { return date.toISOString().split('T')[0]; }
+
+    function formatFriendlyDate(date) {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dataInItaliano = date.toLocaleDateString('it-IT', options);
+        return dataInItaliano.charAt(0).toUpperCase() + dataInItaliano.slice(1) + ` (Sett. ${getWeekNumber(date)})`;
+    }
+
+    async function fetchAllData() {
+        try {
+            const response = await fetch(`${FIREBASE_URL}/letture.json`);
+            const data = await response.json();
+            allDatabaseData = data || {};
+            loadDayData();
+        } catch (error) {
+            console.error("Errore nel caricamento dei dati dal cloud:", error);
+        }
+    }
+
+    function loadDayData() {
+        const key = formatDateKey(currentDate);
+        dateDisplay.textContent = formatFriendlyDate(currentDate);
+
+        const dayData = allDatabaseData[key];
+        if (dayData) {
+            inputReadings.value = dayData.readings || '';
+            inputComment.value = dayData.comment || '';
+        } else {
+            inputReadings.value = '';
+            inputComment.value = '';
+        }
+        renderCalendar();
+    }
+
+    async function saveDayData() {
+        if (!IS_ADMIN) return;
+        
+        const key = formatDateKey(currentDate);
+        const dataToSave = {
+            readings: inputReadings.value,
+            comment: inputComment.value
+        };
+
+        allDatabaseData[key] = dataToSave;
+
+        try {
+            await fetch(`${FIREBASE_URL}/letture/${key}.json`, {
+                method: 'PUT',
+                body: JSON.stringify(dataToSave)
+            });
+            saveStatus.style.display = 'inline';
+            setTimeout(() => { saveStatus.style.display = 'none'; }, 1000);
+            renderCalendar();
+        } catch (error) {
+            alert("Errore durante il salvataggio online!");
+        }
+    }
+
+    function renderCalendar() {
+        daysContainer.innerHTML = '';
+        let dateIterator = new Date(); // Parte esattamente da OGGI
+        let daysToRender = [];
+
+        // Genera gli ultimi 60 giorni a partire da oggi a ritroso
+        for (let i = 0; i < 60; i++) {
+            daysToRender.push(new Date(dateIterator));
+            dateIterator.setDate(dateIterator.getDate() - 1);
+        }
+
+        // Aggiunge all'elenco eventuali giorni salvati nel DB ancora più vecchi o futuri
+        Object.keys(allDatabaseData).forEach(datePart => {
+            if (!daysToRender.some(d => formatDateKey(d) === datePart)) {
+                daysToRender.push(new Date(datePart));
+            }
+        });
+
+        // Ordina le date dalla più recente (oggi) alla più vecchia
+        daysToRender.sort((a,b) => b - a);
+
+        daysToRender.forEach(date => {
+            const key = formatDateKey(date);
+            const hasContent = allDatabaseData[key] && (allDatabaseData[key].readings || allDatabaseData[key].comment);
+            
+            const pill = document.createElement('div');
+            pill.className = 'day-pill';
+            if (formatDateKey(currentDate) === key) pill.classList.add('active');
+            if (hasContent) pill.classList.add('has-content');
+
+            const g = date.getDate();
+            const m = date.toLocaleDateString('it-IT', {month: 'short'});
+            const a = date.getFullYear();
+            
+            // Ottieni il giorno della settimana (lun, mar, mer...)
+            const giornoSettimana = date.toLocaleDateString('it-IT', {weekday: 'short'});
+            const s = getWeekNumber(date);
+
+            pill.innerHTML = `
+                <span class="weekday-badge">${giornoSettimana}</span>
+                <strong>${g} ${m} ${a}</strong>
+                <span class="week-badge">Sett. ${s}</span>
+            `;
+            
+            pill.onclick = () => {
+                currentDate = new Date(date);
+                loadDayData();
+            };
+            daysContainer.appendChild(pill);
+        });
+    }
+
+    adminBtn.onclick = () => {
+        if (IS_ADMIN) {
+            IS_ADMIN = false;
+            adminBtn.textContent = "🔒 Sblocca Scrittura";
+            adminBtn.classList.remove('logged');
+            inputReadings.disabled = true;
+            inputComment.disabled = true;
+        } else {
+            const pass = prompt("Inserisci la password segreta per modificare:");
+            if (pass === SECRET_PASSWORD) {
+                IS_ADMIN = true;
+                adminBtn.textContent = "🔓 Modalità Scrittura Attiva";
+                adminBtn.classList.add('logged');
+                inputReadings.disabled = false;
+                inputComment.disabled = false;
+                inputReadings.placeholder = "Es. Genesi 1-3";
+                inputComment.placeholder = "Cosa ti ha colpito oggi?";
+            } else if (pass !== null) {
+                alert("Password errata!");
+            }
+        }
+    };
+
+    inputReadings.oninput = saveDayData;
+    inputComment.oninput = saveDayData;
+
+    document.getElementById('btnPrev').onclick = () => { currentDate.setDate(currentDate.getDate() - 1); loadDayData(); };
+    document.getElementById('btnNext').onclick = () => { currentDate.setDate(currentDate.getDate() + 1); loadDayData(); };
+    document.getElementById('btnToday').onclick = () => { currentDate = new Date(); loadDayData(); };
+
+    fetchAllData();
+</script>
+
+</body>
+</html>
