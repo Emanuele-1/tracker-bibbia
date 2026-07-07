@@ -49,7 +49,7 @@
         textarea { resize: vertical; min-height: 120px; }
         .status-saved { color: #27ae60; font-size: 14px; font-weight: bold; display: none; }
         
-        /* STILE NUOVO CALENDARIO A GRIGLIA MENSILE */
+        /* STILE CALENDARIO A GRIGLIA MENSILE */
         .calendar-preview {
             background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
@@ -140,7 +140,7 @@
     const SECRET_PASSWORD = "Emanuele"; 
     
     let currentDate = new Date(); 
-    let calendarViewDate = new Date(); // Tiene traccia del mese visualizzato nel calendario in fondo
+    let calendarViewDate = new Date(); 
     let IS_ADMIN = false;
     let allDatabaseData = {}; 
 
@@ -209,7 +209,6 @@
         }
     }
 
-    // FUNZIONE DI RENDERING DEL CALENDARIO A GRIGLIA MENSILE
     function renderCalendarGrid() {
         const gridContainer = document.getElementById('calendarDaysGrid');
         const monthTitle = document.getElementById('calendarMonthTitle');
@@ -218,28 +217,21 @@
         const year = calendarViewDate.getFullYear();
         const month = calendarViewDate.getMonth();
 
-        // Titolo del mese corrente in Italiano
         const nomeMese = calendarViewDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
         monthTitle.textContent = nomeMese.charAt(0).toUpperCase() + nomeMese.slice(1);
 
-        // Primo giorno del mese
         const firstDayOfMonth = new Date(year, month, 1);
-        // Giorno della settimana del primo giorno (0 = Domenica, ..., 6 = Sabato)
-        // Lo convertiamo per far iniziare la settimana di Lunedì (0 = Lun, ..., 6 = Dom)
         let startDayIndex = firstDayOfMonth.getDay() - 1;
         if (startDayIndex === -1) startDayIndex = 6; 
 
-        // Numero totale di giorni nel mese
         const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
 
-        // 1. Inserisci i quadrati vuoti prima del primo giorno del mese
         for (let i = 0; i < startDayIndex; i++) {
             const emptyDiv = document.createElement('div');
             emptyDiv.className = 'calendar-day empty';
             gridContainer.appendChild(emptyDiv);
         }
 
-        // 2. Inserisci i giorni reali del mese
         for (let day = 1; day <= totalDaysInMonth; day++) {
             const loopDate = new Date(year, month, day);
             const key = formatDateKey(loopDate);
@@ -252,7 +244,8 @@
             if (hasContent) dayCell.classList.add('has-content');
 
             const numSettimana = getWeekNumber(loopDate);
-            dayCell.innerHTML = `${day} <span class="mini-week">S.${numSettimana}</span>`;
+            // MODIFICATO QUI: Ora mostra "sett. X" invece di "S.X"
+            dayCell.innerHTML = `${day} <span class="mini-week">sett. ${numSettimana}</span>`;
 
             dayCell.onclick = () => {
                 currentDate = new Date(loopDate);
@@ -263,7 +256,6 @@
         }
     }
 
-    // Gestione Cambiamento Mese del Calendario
     document.getElementById('btnPrevMonth').onclick = () => {
         calendarViewDate.setMonth(calendarViewDate.getMonth() - 1);
         renderCalendarGrid();
@@ -301,12 +293,12 @@
 
     document.getElementById('btnPrev').onclick = () => { 
         currentDate.setDate(currentDate.getDate() - 1); 
-        calendarViewDate = new Date(currentDate); // Sincronizza il calendario se ti sposti di molto
+        calendarViewDate = new Date(currentDate); 
         loadDayData(); 
     };
     document.getElementById('btnNext').onclick = () => { 
         currentDate.setDate(currentDate.getDate() + 1); 
-        calendarViewDate = new Date(currentDate); // Sincronizza il calendario se ti sposti di molto
+        calendarViewDate = new Date(currentDate); 
         loadDayData(); 
     };
     document.getElementById('btnToday').onclick = () => { 
