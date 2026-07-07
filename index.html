@@ -231,34 +231,28 @@
     <h1>Tracker Lettura Biblica <span id="adminBtn" class="admin-badge">🔒 Sblocca Scrittura</span></h1>
     <div class="subtitle">Diario di lettura pubblico (Sola lettura per gli ospiti)</div>
 
-    <!-- Menu a Schede -->
     <ul class="nav-tabs">
         <li class="tab-link active" onclick="switchTab(event, 'diario-tab')">📖 Lettura & Diario di Oggi</li>
         <li class="tab-link" onclick="switchTab(event, 'programma-tab')">📋 Programma Completo & Legenda</li>
     </ul>
 
-    <!-- SCHEDA 1: DIARIO, LETTURA AUTOMATICA E CALENDARIO -->
     <div id="diario-tab" class="tab-content active">
         
-        <!-- Box Capitoli Assegnati Oggi -->
         <div class="assigned-reading-box">
             <div class="assigned-reading-title" id="assignedCategoryTitle">Programma di Oggi: Legge</div>
             <div class="assigned-chapters" id="assignedChaptersTarget">Caricamento capitoli...</div>
         </div>
 
-        <!-- Box Incorporato Testo Sacro -->
         <div class="bible-iframe-container">
             <iframe class="bible-iframe" id="bibleViewerFrame" src="about:blank"></iframe>
         </div>
 
-        <!-- Pannello Navigazione Date del Diario -->
         <div class="navigation">
             <button id="btnPrev">◀ Ieri</button>
             <div class="current-date-display" id="dateDisplay">Caricamento...</div>
             <button id="btnNext">Domani ▶</button>
         </div>
 
-        <!-- Zona Editor Diario (Firebase) -->
         <div class="editor-zone">
             <div class="input-group">
                 <label for="inputReadings">📖 Capitoli letti oggi:</label>
@@ -274,7 +268,6 @@
             </div>
         </div>
 
-        <!-- Griglia Calendario Mensile Completo -->
         <div class="calendar-preview">
             <div class="calendar-header">
                 <button id="btnPrevMonth" class="calendar-nav-btn">◀ Mese Prec.</button>
@@ -288,7 +281,6 @@
         </div>
     </div>
 
-    <!-- SCHEDA 2: PROGRAMMA ANNUALE COMPLETO E LEGENDA STAMPABILE -->
     <div id="programma-tab" class="tab-content">
         <h2>Tabella Annuale delle Letture</h2>
         <p class="no-print" style="color: #666; font-size: 14px;">Istruzione: Per stampare questo schema comprensivo di legenda su carta A4, premi semplicemente <strong>Ctrl + P</strong> (Windows) o <strong>Cmd + P</strong> (Mac) sulla tastiera.</p>
@@ -308,15 +300,13 @@
                     </tr>
                 </thead>
                 <tbody id="tableBodyTarget">
-                    <!-- Righe popolate via JavaScript -->
-                </tbody>
+                    </tbody>
             </table>
         </div>
 
         <h2 style="margin-top: 35px;">Legenda Abbreviazioni Libri</h2>
         <div class="legend-grid" id="legendTarget">
-            <!-- Popolata via JavaScript -->
-        </div>
+            </div>
     </div>
 </div>
 
@@ -347,12 +337,12 @@
         "2Ts": "2 Tessalonicesi", "1Tm": "1 Timoteo", "2Tm": "2 Timoteo", "Tt": "Tito", "Tb": "Tobia", "Zc": "Zaccaria"
     };
 
+    // ORDINE ESATTO COLONNA PER COLONNA PRESO DALLA TUA FOTO DI CARTA
     const ordineLegendaPersonalizzato = [
-        "Ab", "Abd", "Ag", "Am", "Ap", "At", "Bar", "Col", 
-        "1Cor", "2Cor", "1Cr", "2Cr", "Ct", "Dn", "Dt", "Eb", "Ef", "Esd", "Es", "Est", "Ez", "Fm", "Fil", "Gal", 
-        "Gn", "Ger", "Gc", "Gb", "Gl", "Gio", "GS", "Gv", "1Gv", "2Gv", "3Gv", "Gd", "Gdc", "Gdt", "Is", "Lam", 
-        "LGer", "Lv", "Lc", "1Mec", "2Mec", "Ml", "Mc", "Mt", "Mic", "Na", "Ne", "Nm", "Os", "1Pt", "2Pt", "Pr", "Qo", 
-        "1Re", "2Re", "Rm", "Rt", "Sal", "1Sam", "2Sam", "Sap", "Sir", "Sof", "1Ts", "2Ts", "1Tm", "2Tm", "Tt", "Tb", "Zc"
+        // Prima colonna del foglio
+        "Ab", "Abd", "Ag", "Am", "Ap", "At", "Bar", "Ct", "Col", "1Cor", "2Cor", "1Cr", "2Cr", "Dn", "Dt", "Eb", "Ef", "Esd", "Es", "Est", "Ez", "Fm", "Fil", "Gal", "Gn", "Ger", "Gc", "Gb", "Gl", "Gio", "GS", "Gv", "1Gv", "2Gv", "3Gv", "Gd", "Gdc",
+        // Seconda colonna del foglio
+        "Gdt", "Is", "Lam", "LGer", "Lv", "Lc", "1Mec", "2Mec", "Ml", "Mc", "Mt", "Mic", "Na", "Ne", "Nm", "Os", "1Pt", "2Pt", "Pr", "Qo", "1Re", "2Re", "Rm", "Rt", "Sal", "1Sam", "2Sam", "Sap", "Sir", "Sof", "1Ts", "2Ts", "1Tm", "2Tm", "Tt", "Tb", "Zc"
     ];
 
     const categorieGiorni = ["Legge", "Storia", "Salmi", "Poesia", "Profezia", "Vangeli", "Epistole"];
@@ -665,7 +655,7 @@
         currentDate = new Date(); 
         calendarViewDate = new Date(currentDate);
         loadDayData();
-        renderCalendarGrid(); // <-- CORREZIONE: Forzo il ridisegno istantaneo della griglia del calendario
+        renderCalendarGrid();
     };
 
     fetchAllData();
