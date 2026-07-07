@@ -88,7 +88,7 @@
             color: var(--accent);
         }
 
-        /* AREA INCORPORAMENTO TESTO DELLA BIBBIA - CORRETTO */
+        /* AREA INCORPORAMENTO TESTO DELLA BIBBIA */
         .bible-iframe-container {
             width: 100%;
             height: 600px;
@@ -206,7 +206,7 @@
         }
         .legend-abbr { font-weight: bold; color: var(--accent); }
 
-        /* REGOLE DI STAMPA PROFESSIONALE (A4) */
+        /* REGOLE DI STAMPA */
         @media print {
             body { background: white; color: black; padding: 0; }
             .nav-tabs, .navigation, .editor-zone, .calendar-preview, .assigned-reading-box, .bible-iframe-container, .no-print, h1 {
@@ -230,28 +230,34 @@
     <h1>Tracker Lettura Biblica <span id="adminBtn" class="admin-badge">🔒 Sblocca Scrittura</span></h1>
     <div class="subtitle">Diario di lettura pubblico (Sola lettura per gli ospiti)</div>
 
+    <!-- Menu a Schede -->
     <ul class="nav-tabs">
         <li class="tab-link active" onclick="switchTab(event, 'diario-tab')">📖 Lettura & Diario di Oggi</li>
         <li class="tab-link" onclick="switchTab(event, 'programma-tab')">📋 Programma Completo & Legenda</li>
     </ul>
 
+    <!-- SCHEDA 1: DIARIO, LETTURA AUTOMATICA E CALENDARIO -->
     <div id="diario-tab" class="tab-content active">
         
+        <!-- Box Capitoli Assegnati Oggi -->
         <div class="assigned-reading-box">
             <div class="assigned-reading-title" id="assignedCategoryTitle">Programma di Oggi: Legge</div>
             <div class="assigned-chapters" id="assignedChaptersTarget">Caricamento capitoli...</div>
         </div>
 
+        <!-- Box Incorporato Testo Sacro -->
         <div class="bible-iframe-container">
             <iframe class="bible-iframe" id="bibleViewerFrame" src="about:blank"></iframe>
         </div>
 
+        <!-- Pannello Navigazione Date del Diario -->
         <div class="navigation">
             <button id="btnPrev">◀ Ieri</button>
             <div class="current-date-display" id="dateDisplay">Caricamento...</div>
             <button id="btnNext">Domani ▶</button>
         </div>
 
+        <!-- Zona Editor Diario (Firebase) -->
         <div class="editor-zone">
             <div class="input-group">
                 <label for="inputReadings">📖 Capitoli letti oggi:</label>
@@ -267,6 +273,7 @@
             </div>
         </div>
 
+        <!-- Griglia Calendario Mensile Completo -->
         <div class="calendar-preview">
             <div class="calendar-header">
                 <button id="btnPrevMonth" class="calendar-nav-btn">◀ Mese Prec.</button>
@@ -280,6 +287,7 @@
         </div>
     </div>
 
+    <!-- SCHEDA 2: PROGRAMMA ANNUALE COMPLETO E LEGENDA STAMPABILE -->
     <div id="programma-tab" class="tab-content">
         <h2>Tabella Annuale delle Letture</h2>
         <p class="no-print" style="color: #666; font-size: 14px;">Istruzione: Per stampare questo schema comprensivo di legenda su carta A4, premi semplicemente <strong>Ctrl + P</strong> (Windows) o <strong>Cmd + P</strong> (Mac) sulla tastiera.</p>
@@ -299,13 +307,15 @@
                     </tr>
                 </thead>
                 <tbody id="tableBodyTarget">
-                    </tbody>
+                    <!-- Righe popolate via JavaScript -->
+                </tbody>
             </table>
         </div>
 
         <h2 style="margin-top: 35px;">Legenda Abbreviazioni Libri</h2>
         <div class="legend-grid" id="legendTarget">
-            </div>
+            <!-- Popolata via JavaScript -->
+        </div>
     </div>
 </div>
 
@@ -319,7 +329,7 @@
     let IS_ADMIN = false;
     let allDatabaseData = {}; 
 
-    // --- DIZIONARI E STRUTTURE DATI COMPRENSIVE (FOTO 2) ---
+    // --- DIZIONARI E STRUTTURE DATI COMPRENSIVE ---
     const abbreviazioni = {
         "Ab": "Abacuc", "Abd": "Abdia", "Ag": "Aggeo", "Am": "Amos", "Ap": "Apocalisse", "At": "Atti",
         "Bar": "Baruc", "Ct": "Cantico dei Cantici", "Col": "Colossesi", "1Cor": "1 Corinzi", "2Cor": "2 Corinzi",
@@ -336,9 +346,17 @@
         "2Ts": "2 Tessalonicesi", "1Tm": "1 Timoteo", "2Tm": "2 Timoteo", "Tt": "Tito", "Tb": "Tobia", "Zc": "Zaccaria"
     };
 
+    // Array ordinato personalizzato per tenere vicini l'1 e il 2 dello stesso libro nella legenda
+    const ordineLegendaPersonalizzato = [
+        "Ab", "Abd", "Ag", "Am", "Ap", "At", "Bar", "Col", 
+        "1Cor", "2Cor", "1Cr", "2Cr", "Ct", "Dn", "Dt", "Eb", "Ef", "Esd", "Es", "Est", "Ez", "Fm", "Fil", "Gal", 
+        "Gn", "Ger", "Gc", "Gb", "Gl", "Gio", "GS", "Gv", "1Gv", "2Gv", "3Gv", "Gd", "Gdc", "Gdt", "Is", "Lam", 
+        "LGer", "Lv", "Lc", "1Mec", "2Mec", "Ml", "Mc", "Mt", "Mic", "Na", "Ne", "Nm", "Os", "1Pt", "2Pt", "Pr", "Qo", 
+        "1Re", "2Re", "Rm", "Rt", "Sal", "1Sam", "2Sam", "Sap", "Sir", "Sof", "1Ts", "2Ts", "1Tm", "2Tm", "Tt", "Tb", "Zc"
+    ];
+
     const categorieGiorni = ["Legge", "Storia", "Salmi", "Poesia", "Profezia", "Vangeli", "Epistole"];
 
-    // PROGRAMMA MATRICIALE DELLE 52 SETTIMANE COMPRENSIVO DI RIGHE EXTRA LATERALI (FOTO 1)
     const programmaTutteSettimane = [
         ["Gn 1-3", "GS 1-5", "Sal 1-2", "Gb 1-2", "Is 1-6", "Mt 1-2", "Rm 1-2", "Tb 1-14"],
         ["Gn 4-7", "GS 6-10", "Sal 3-5", "Gb 3-4", "Is 7-11", "Mt 3-4", "Rm 3-4", "Gdt 1-16"],
@@ -419,6 +437,29 @@
         return dataInItaliano.charAt(0).toUpperCase() + dataInItaliano.slice(1) + ` (Sett. ${getWeekNumber(date)})`;
     }
 
+    // NUOVA FUNZIONE DI FORMATTAZIONE PER RISOLVERE IL BUG DI GENESI 1:1 NELL'IFRAME
+    function preparaQueryLaParola(testoLettura) {
+        if (!testoLettura) return "";
+        let pulito = testoLettura.trim();
+        
+        // Se contiene un intervallo con il trattino (es. "2Re 6-10" o "Gn 1-3")
+        if (pulito.includes("-")) {
+            let partiTrattino = pulito.split("-");
+            let primaParte = partiTrattino[0].trim(); // es. "2Re 6" o "Gn 1"
+            let secondaParte = partiTrattino[1].trim(); // es. "10" o "3"
+            
+            // Estrae il nome del libro (tutto ciò che precede l'ultimo spazio della prima parte)
+            let ultimoSpazioIdx = primaParte.lastIndexOf(" ");
+            if (ultimoSpazioIdx !== -1) {
+                let nomeLibro = primaParte.substring(0, ultimoSpazioIdx).trim();
+                // Costruisce la query nel formato esatto gradito al motore del sito: "2Re 6 - 2Re 10"
+                pulito = primaParte + " - " + nomeLibro + " " + secondaParte;
+            }
+        }
+        // Converte gli spazi in "+" anziché nel codice %20 che rompeva i parametri di LaParola
+        return pulito.replace(/ /g, "+");
+    }
+
     // --- ACQUISIZIONE E CARICAMENTO REALE FIREBASE ---
     async function fetchAllData() {
         try {
@@ -436,7 +477,6 @@
         const key = formatDateKey(currentDate);
         dateDisplay.textContent = formatFriendlyDate(currentDate);
 
-        // 1. Estrazione Capitoli Automatici in Base alla Data Attuale Selezionata
         let dayOfWeekIdx = currentDate.getDay() - 1; 
         if (dayOfWeekIdx === -1) dayOfWeekIdx = 6; 
         const settAssegnata = getWeekNumber(currentDate);
@@ -444,20 +484,18 @@
         let capitoliAutomatici = programmaTutteSettimane[settAssegnata - 1][dayOfWeekIdx];
         let categoriaAutomatica = categorieGiorni[dayOfWeekIdx];
 
-        // Controllo per le righe speciali e aggiunte opzionali della prima colonna (se presenti)
         if (programmaTutteSettimane[settAssegnata - 1][7] && dayOfWeekIdx === 1) {
-             // Se martedì nelle prime settimane, mostra anche l'appendice speciale di storia
              capitoliAutomatici += " e " + programmaTutteSettimane[settAssegnata - 1][7];
         }
 
         document.getElementById('assignedCategoryTitle').innerText = "Programma del Giorno: " + categoriaAutomatica;
         document.getElementById('assignedChaptersTarget').innerText = capitoliAutomatici;
 
-        // 2. AGGIORNAMENTO CORRETTO E DIRETTO DELL'IFRAME CON TESTO DI LETTURA REALE
-        const urlLetturaDiretta = `https://www.laparola.net/testo.php?riferimento=${encodeURIComponent(programmaTutteSettimane[settAssegnata - 1][dayOfWeekIdx])}`;
+        // RISOLUZIONE BUG: Generazione dell'URL super-pulito e compatibile per l'iframe
+        const queryFormattata = preparaQueryLaParola(programmaTutteSettimane[settAssegnata - 1][dayOfWeekIdx]);
+        const urlLetturaDiretta = `https://www.laparola.net/testo.php?riferimento=${queryFormattata}`;
         document.getElementById('bibleViewerFrame').src = urlLetturaDiretta;
 
-        // 3. Gestione Campi Diario Cloud
         const dayData = allDatabaseData[key];
         if (dayData) {
             inputReadings.value = dayData.readings || '';
@@ -554,7 +592,7 @@
             let tdHTML = `<td><strong>${idx + 1}</strong></td>`;
             for(let i=0; i<7; i++) {
                 let cellData = riga[i];
-                if(i === 1 && riga[7]) { // Aggiunta note appendici cartacee
+                if(i === 1 && riga[7]) { 
                     cellData += `<br><span style="color:#e74c3c; font-size:11px;">+ ${riga[7]}</span>`;
                 }
                 tdHTML += `<td>${cellData}</td>`;
@@ -563,14 +601,17 @@
             tbody.appendChild(tr);
         });
 
-        // Generazione elementi legenda
+        // Generazione elementi legenda secondo l'ordine personalizzato richiesto
         const legendContainer = document.getElementById('legendTarget');
         legendContainer.innerHTML = '';
-        Object.keys(abbreviazioni).sort().forEach(chiave => {
-            const voce = document.createElement('div');
-            voce.className = 'legend-item';
-            voce.innerHTML = `<span class="legend-abbr">${chiave}</span><span>${abbreviazioni[chiave]}</span>`;
-            legendContainer.appendChild(voce);
+        
+        ordineLegendaPersonalizzato.forEach(chiave => {
+            if (abbreviazioni[chiave]) {
+                const voce = document.createElement('div');
+                voce.className = 'legend-item';
+                voce.innerHTML = `<span class="legend-abbr">${chiave}</span><span>${abbreviazioni[chiave]}</span>`;
+                legendContainer.appendChild(voce);
+            }
         });
     }
 
@@ -626,7 +667,6 @@
         loadDayData(); 
     };
 
-    // Esecuzione Avvio Globale
     fetchAllData();
 </script>
 
