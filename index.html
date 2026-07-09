@@ -294,22 +294,18 @@
     <h1>Tracker Lettura Biblica <span id="adminBtn" class="admin-badge">🔒 Sblocca Scrittura</span></h1>
     <div class="subtitle">Diario di lettura pubblico (Sola lettura per gli ospiti)</div>
 
-    <!-- Menu a Schede -->
     <ul class="nav-tabs">
         <li class="tab-link active" onclick="switchTab(event, 'diario-tab')">📖 Lettura & Diario di Oggi</li>
         <li class="tab-link" onclick="switchTab(event, 'programma-tab')">📋 Programma Completo & Legenda</li>
     </ul>
 
-    <!-- SCHEDA 1 -->
     <div id="diario-tab" class="tab-content active">
         
-        <!-- Box Capitoli Assegnati -->
         <div class="assigned-reading-box">
             <div class="assigned-reading-title" id="assignedCategoryTitle">Programma di Oggi: Legge</div>
             <div class="assigned-chapters" id="assignedChaptersTarget">Caricamento capitoli...</div>
         </div>
 
-        <!-- Finestra macOS per La Parola.net -->
         <div class="mac-window-container" id="macBibleWindow">
             <div class="mac-titlebar">
                 <div class="mac-buttons">
@@ -324,14 +320,12 @@
             </div>
         </div>
 
-        <!-- Navigazione Date -->
         <div class="navigation">
             <button id="btnPrev">◀ Ieri</button>
             <div class="current-date-display" id="dateDisplay">Caricamento...</div>
             <button id="btnNext">Domani ▶</button>
         </div>
 
-        <!-- Zona Editor Diario -->
         <div class="editor-zone">
             <div class="input-group">
                 <label for="inputReadings">📖 Capitoli letti oggi:</label>
@@ -347,7 +341,6 @@
             </div>
         </div>
 
-        <!-- Griglia Calendario -->
         <div class="calendar-preview">
             <div class="calendar-header">
                 <button id="btnPrevMonth" class="calendar-nav-btn">◀ Mese Prec.</button>
@@ -361,7 +354,6 @@
         </div>
     </div>
 
-    <!-- SCHEDA 2 -->
     <div id="programma-tab" class="tab-content">
         <h2>Tabella Annuale delle Letture</h2>
         <p class="no-print" style="color: #666; font-size: 13px;">Istruzione: Per stampare questo schema comprensivo di legenda su carta A4, premi semplicemente <strong>Ctrl + P</strong> o <strong>Cmd + P</strong> sulla tastiera.</p>
@@ -381,15 +373,13 @@
                     </tr>
                 </thead>
                 <tbody id="tableBodyTarget">
-                    <!-- JavaScript -->
-                </tbody>
+                    </tbody>
             </table>
         </div>
 
         <h2 style="margin-top: 35px;">Legenda Abbreviazioni Libri</h2>
         <div class="legend-grid" id="legendTarget">
-            <!-- JavaScript -->
-        </div>
+            </div>
     </div>
 </div>
 
@@ -510,7 +500,13 @@
         return num > 52 ? 52 : num; 
     }
 
-    function formatDateKey(date) { return date.toISOString().split('T')[0]; }
+    /* FIX DEFINITIVO FUSO ORARIO: Estrae anno, mese e giorno locale esatto */
+    function formatDateKey(date) { 
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`; 
+    }
 
     function formatFriendlyDate(date) {
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -592,7 +588,6 @@
         }
     }
 
-    /* FIX ALLINEAMENTO CALENDARIO: startDayIndex corretto per lunedì = 0 */
     function renderCalendarGrid() {
         const gridContainer = document.getElementById('calendarDaysGrid');
         const monthTitle = document.getElementById('calendarMonthTitle');
