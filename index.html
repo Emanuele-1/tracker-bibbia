@@ -23,7 +23,13 @@
             align-items: center;
             line-height: 1.25;
         }
+        body.fullscreen-mode {
+            padding: 0;
+            overflow: hidden;
+        }
         .container { max-width: 800px; width: 100%; box-sizing: border-box; }
+        body.fullscreen-mode .container { max-width: 100%; }
+        
         h1 { text-align: center; color: var(--primary); margin-bottom: 5px; font-size: 24px; }
         .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 20px; font-size: 14px; }
         
@@ -100,6 +106,19 @@
             margin-bottom: 25px;
             transition: height 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             height: 600px;
+        }
+        
+        /* STILE MODALITÀ TUTTO SCHERMO PER LA FINESTRA */
+        .mac-window-container.fullscreen-active {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            border-radius: 0;
+            border: none;
+            margin: 0;
         }
         
         /* BARRA DEI BOTTONI A SEMAFORO */
@@ -309,9 +328,9 @@
         <div class="mac-window-container" id="macBibleWindow">
             <div class="mac-titlebar">
                 <div class="mac-buttons">
-                    <div class="mac-dot close" id="macBtnClose" title="Ripristina"></div>
-                    <div class="mac-dot minimize" id="macBtnMinimize" title="Contrai finestra"></div>
-                    <div class="mac-dot maximize" id="macBtnMaximize" title="Rendi grande"></div>
+                    <div class="mac-dot close" id="macBtnClose" title="Ripristina (450px)"></div>
+                    <div class="mac-dot minimize" id="macBtnMinimize" title="Contrai (60px)"></div>
+                    <div class="mac-dot maximize" id="macBtnMaximize" title="Tutto schermo"></div>
                 </div>
                 <div style="margin-left: 15px; font-size: 11px; color: #555; font-weight: 500;">La Parola.net</div>
             </div>
@@ -477,19 +496,34 @@
         event.currentTarget.classList.add('active');
     }
 
+    /* CONTROLLI SEMAFORO AGGIORNATI */
+    const macWindow = document.getElementById('macBibleWindow');
+
+    // Giallo: Contrai a 60px
     document.getElementById('macBtnMinimize').onclick = () => {
-        document.getElementById('macBibleWindow').style.height = "60px";
+        macWindow.classList.remove('fullscreen-active');
+        document.body.classList.remove('fullscreen-mode');
+        macWindow.style.height = "60px";
     };
 
+    // Verde: Tutto Schermo (Fullscreen) alternato
     document.getElementById('macBtnMaximize').onclick = () => {
-        document.getElementById('macBibleWindow').style.height = "60px";
-        setTimeout(() => {
-            document.getElementById('macBibleWindow').style.height = "600px";
-        }, 50);
+        if (macWindow.classList.contains('fullscreen-active')) {
+            macWindow.classList.remove('fullscreen-active');
+            document.body.classList.remove('fullscreen-mode');
+            macWindow.style.height = "600px";
+        } else {
+            macWindow.style.height = ""; // Reset inline height
+            macWindow.classList.add('fullscreen-active');
+            document.body.classList.add('fullscreen-mode');
+        }
     };
 
+    // Rosso: Ripristina a 450px
     document.getElementById('macBtnClose').onclick = () => {
-        document.getElementById('macBibleWindow').style.height = "450px";
+        macWindow.classList.remove('fullscreen-active');
+        document.body.classList.remove('fullscreen-mode');
+        macWindow.style.height = "450px";
     };
 
     function getWeekNumber(d) {
@@ -500,7 +534,6 @@
         return num > 52 ? 52 : num; 
     }
 
-    /* FIX DEFINITIVO FUSO ORARIO: Estrae anno, mese e giorno locale esatto */
     function formatDateKey(date) { 
         const y = date.getFullYear();
         const m = String(date.getMonth() + 1).padStart(2, '0');
