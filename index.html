@@ -141,12 +141,16 @@
             border-radius: 50%;
             cursor: pointer;
             position: relative;
-            border: 0.5px solid rgba(0,0,0,0.1);
+            border: 0.5px solid rgba(0,0,0,0.15);
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 7px;
         }
-        .mac-dot.close { background: #ff5f56; }
-        .mac-dot.minimize { background: #ffbd2e; }
-        .mac-dot.maximize { background: #27c93f; }
+        .mac-dot.close { background-color: #ff5f56; }
+        .mac-dot.minimize { background-color: #ffbd2e; }
+        .mac-dot.maximize { background-color: #27c93f; }
         
+        /* Gestione hover generica per rosso e giallo */
         .mac-dot:hover::after {
             font-size: 9px;
             font-weight: bold;
@@ -154,11 +158,22 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: rgba(0,0,0,0.5);
+            color: rgba(0,0,0,0.55);
         }
         .mac-dot.close:hover::after { content: '×'; }
         .mac-dot.minimize:hover::after { content: '−'; }
-        .mac-dot.maximize:hover::after { content: '+'; }
+        
+        /* GLIFO PULSANTE VERDE - STATO STANDARD (FOTO 1: Freccette divergenti per espandere) */
+        .mac-dot.maximize:hover {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1,4 L1,1 L4,1 M9,6 L9,9 L6,9' fill='none' stroke='rgba(0,40,0,0.7)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-size: 7px;
+        }
+
+        /* GLIFO PULSANTE VERDE - STATO FULLSCREEN ATTIVO (FOTO 2: Freccette convergenti per contrarre) */
+        .mac-window-container.fullscreen-active .mac-dot.maximize:hover {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M4,1 L4,4 L1,4 M6,9 L6,6 L9,6' fill='none' stroke='rgba(0,40,0,0.7)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-size: 8px;
+        }
 
         .bible-iframe-wrapper {
             width: 100%;
@@ -313,18 +328,22 @@
     <h1>Tracker Lettura Biblica <span id="adminBtn" class="admin-badge">🔒 Sblocca Scrittura</span></h1>
     <div class="subtitle">Diario di lettura pubblico (Sola lettura per gli ospiti)</div>
 
+    <!-- Menu a Schede -->
     <ul class="nav-tabs">
         <li class="tab-link active" onclick="switchTab(event, 'diario-tab')">📖 Lettura & Diario di Oggi</li>
         <li class="tab-link" onclick="switchTab(event, 'programma-tab')">📋 Programma Completo & Legenda</li>
     </ul>
 
+    <!-- SCHEDA 1 -->
     <div id="diario-tab" class="tab-content active">
         
+        <!-- Box Capitoli Assegnati -->
         <div class="assigned-reading-box">
             <div class="assigned-reading-title" id="assignedCategoryTitle">Programma di Oggi: Legge</div>
             <div class="assigned-chapters" id="assignedChaptersTarget">Caricamento capitoli...</div>
         </div>
 
+        <!-- Finestra macOS per La Parola.net -->
         <div class="mac-window-container" id="macBibleWindow">
             <div class="mac-titlebar">
                 <div class="mac-buttons">
@@ -339,12 +358,14 @@
             </div>
         </div>
 
+        <!-- Navigazione Date -->
         <div class="navigation">
             <button id="btnPrev">◀ Ieri</button>
             <div class="current-date-display" id="dateDisplay">Caricamento...</div>
             <button id="btnNext">Domani ▶</button>
         </div>
 
+        <!-- Zona Editor Diario -->
         <div class="editor-zone">
             <div class="input-group">
                 <label for="inputReadings">📖 Capitoli letti oggi:</label>
@@ -360,6 +381,7 @@
             </div>
         </div>
 
+        <!-- Griglia Calendario -->
         <div class="calendar-preview">
             <div class="calendar-header">
                 <button id="btnPrevMonth" class="calendar-nav-btn">◀ Mese Prec.</button>
@@ -373,6 +395,7 @@
         </div>
     </div>
 
+    <!-- SCHEDA 2 -->
     <div id="programma-tab" class="tab-content">
         <h2>Tabella Annuale delle Letture</h2>
         <p class="no-print" style="color: #666; font-size: 13px;">Istruzione: Per stampare questo schema comprensivo di legenda su carta A4, premi semplicemente <strong>Ctrl + P</strong> o <strong>Cmd + P</strong> sulla tastiera.</p>
@@ -392,13 +415,15 @@
                     </tr>
                 </thead>
                 <tbody id="tableBodyTarget">
-                    </tbody>
+                    <!-- JavaScript -->
+                </tbody>
             </table>
         </div>
 
         <h2 style="margin-top: 35px;">Legenda Abbreviazioni Libri</h2>
         <div class="legend-grid" id="legendTarget">
-            </div>
+            <!-- JavaScript -->
+        </div>
     </div>
 </div>
 
@@ -496,7 +521,7 @@
         event.currentTarget.classList.add('active');
     }
 
-    /* CONTROLLI SEMAFORO AGGIORNATI */
+    /* CONTROLLI SEMAFORO CON GLIFI DINAMICI */
     const macWindow = document.getElementById('macBibleWindow');
 
     // Giallo: Contrai a 60px
@@ -513,7 +538,7 @@
             document.body.classList.remove('fullscreen-mode');
             macWindow.style.height = "600px";
         } else {
-            macWindow.style.height = ""; // Reset inline height
+            macWindow.style.height = ""; // Reset dell'altezza inline per permettere il 100vh del CSS
             macWindow.classList.add('fullscreen-active');
             document.body.classList.add('fullscreen-mode');
         }
