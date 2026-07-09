@@ -17,15 +17,15 @@
             background-color: var(--bg);
             color: var(--primary);
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             line-height: 1.25;
         }
-        .container { max-width: 800px; width: 100%; }
-        h1 { text-align: center; color: var(--primary); margin-bottom: 5px; }
-        .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 25px; }
+        .container { max-width: 800px; width: 100%; box-sizing: border-box; }
+        h1 { text-align: center; color: var(--primary); margin-bottom: 5px; font-size: 24px; }
+        .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 20px; font-size: 14px; }
         
         /* BARRA DEI TAB DI NAVIGAZIONE */
         .nav-tabs {
@@ -33,7 +33,7 @@
             justify-content: center;
             background-color: #34495e;
             padding: 0;
-            margin: 0 0 25px 0;
+            margin: 0 0 20px 0;
             border-radius: 12px;
             overflow: hidden;
             list-style: none;
@@ -43,11 +43,12 @@
         .tab-link {
             flex: 1;
             text-align: center;
-            padding: 15px 20px;
+            padding: 12px 10px;
             color: #bdc3c7;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s ease;
+            font-size: 13px;
         }
         .tab-link:hover {
             color: white;
@@ -70,34 +71,79 @@
         .assigned-reading-box {
             background: var(--card);
             border-left: 5px solid var(--accent);
-            padding: 20px;
+            padding: 15px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 20px;
         }
         .assigned-reading-title {
-            font-size: 15px;
+            font-size: 12px;
             font-weight: bold;
             color: #7f8c8d;
             text-transform: uppercase;
             margin-bottom: 5px;
         }
         .assigned-chapters {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 800;
             color: var(--accent);
         }
 
-        /* AREA INCORPORAMENTO TESTO DELLA BIBBIA */
-        .bible-iframe-container {
+        /* CONTENITORE FINESTRA STILE MACMACOS */
+        .mac-window-container {
             width: 100%;
-            height: 600px;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             background: var(--card);
             border: 1px solid var(--border-color);
             margin-bottom: 25px;
+            transition: height 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            height: 600px; /* Altezza di default */
+        }
+        
+        /* BARRA DEI BOTTONI A SEMAFORO */
+        .mac-titlebar {
+            background: #e1e1e1;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            border-bottom: 1px solid #d1d1d1;
+            user-select: none;
+        }
+        .mac-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .mac-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            border: 0.5px solid rgba(0,0,0,0.1);
+        }
+        .mac-dot.close { background: #ff5f56; }
+        .mac-dot.minimize { background: #ffbd2e; }
+        .mac-dot.maximize { background: #27c93f; }
+        
+        .mac-dot:hover::after {
+            font-size: 9px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(0,0,0,0.5);
+        }
+        .mac-dot.close:hover::after { content: '×'; }
+        .mac-dot.minimize:hover::after { content: '−'; }
+        .mac-dot.maximize:hover::after { content: '+'; }
+
+        .bible-iframe-wrapper {
+            width: 100%;
+            height: calc(100% - 31px);
         }
         .bible-iframe {
             width: 100%;
@@ -105,91 +151,92 @@
             border: none;
         }
 
+        /* NAVIGAZIONE */
         .navigation {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--card); padding: 15px; border-radius: 12px;
+            background: var(--card); padding: 12px; border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;
+            gap: 10px;
         }
         button {
-            background: var(--accent); color: white; border: none; padding: 10px 15px;
-            border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;
+            background: var(--accent); color: white; border: none; padding: 10px 12px;
+            border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;
+            white-space: nowrap;
         }
         button:hover { opacity: 0.9; }
-        .current-date-display { font-size: 18px; font-weight: bold; }
+        .current-date-display { font-size: 14px; font-weight: bold; text-align: center; }
+        
         .editor-zone {
-            background: var(--card); padding: 25px; border-radius: 12px;
+            background: var(--card); padding: 20px; border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;
-            position: relative;
         }
         .input-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 13px; }
         input[type="text"], textarea {
             width: 100%; padding: 12px; border: 1px solid #dce4ec;
-            border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: inherit;
+            border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: inherit;
         }
-        textarea { resize: vertical; min-height: 120px; }
-        .status-saved { color: #27ae60; font-size: 14px; font-weight: bold; display: none; }
+        textarea { resize: vertical; min-height: 100px; }
+        .status-saved { color: #27ae60; font-size: 13px; font-weight: bold; display: none; }
         
-        /* CALENDARIO A GRIGLIA MENSILE */
+        /* CALENDARIO REINTEGRATO E ADATTIVO PER DISPOSITIVI MOBILI */
         .calendar-preview {
-            background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            background: var(--card); padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            width: 100%; box-sizing: border-box;
         }
         .calendar-header {
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
         }
-        .calendar-title { font-size: 16px; font-weight: bold; }
-        .calendar-nav-btn { background: var(--primary); padding: 5px 10px; font-size: 12px; }
+        .calendar-title { font-size: 15px; font-weight: bold; }
+        .calendar-nav-btn { background: var(--primary); padding: 6px 10px; font-size: 11px; }
         
         .weekdays-grid {
             display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;
-            font-weight: bold; font-size: 11px; color: #7f8c8d; margin-bottom: 5px;
+            font-weight: bold; font-size: 11px; color: #7f8c8d; margin-bottom: 8px;
             text-transform: uppercase;
         }
         .days-grid {
-            display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;
         }
         .calendar-day {
-            background: #edf2f7; padding: 10px 5px; border-radius: 8px; text-align: center;
-            font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid transparent;
+            background: #edf2f7; padding: 5px 2px; border-radius: 6px; text-align: center;
+            font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid transparent;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            aspect-ratio: 1; min-height: 45px;
+            aspect-ratio: 1; min-height: 40px; box-sizing: border-box;
         }
         .calendar-day.empty { background: transparent; cursor: default; }
         .calendar-day.active { background: var(--primary); color: white; }
         .calendar-day.has-content { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
-        .calendar-day .mini-week { display: block; font-size: 8px; color: #7f8c8d; font-weight: normal; margin-top: 2px; }
+        .calendar-day .mini-week { display: block; font-size: 7.5px; color: #7f8c8d; font-weight: normal; margin-top: 1px; }
         .calendar-day.active .mini-week { color: #bdc3c7; }
 
         .admin-badge {
             background: #e74c3c; color: white; padding: 3px 8px; 
-            border-radius: 20px; font-size: 11px; font-weight: bold;
-            cursor: pointer; margin-left: 10px; display: inline-block;
+            border-radius: 20px; font-size: 10px; font-weight: bold;
+            cursor: pointer; margin-left: 5px; display: inline-block;
+            vertical-align: middle;
         }
         .admin-badge.logged { background: #27ae60; }
         
         input:disabled, textarea:disabled { 
-            background: #fdfefe; 
-            color: #7f8c8d; 
-            -webkit-text-fill-color: #7f8c8d; 
-            opacity: 1; 
-            font-style: italic;
+            background: #fdfefe; color: #7f8c8d; -webkit-text-fill-color: #7f8c8d; opacity: 1; font-style: italic;
         }
 
         /* TABELLA PROGRAMMA COMPLETO SCHEDA 2 */
         .program-table-container {
-            background: var(--card); padding: 20px; border-radius: 12px;
+            background: var(--card); padding: 15px; border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border-color);
-            overflow-x: auto; margin-top: 15px;
+            overflow-x: auto; margin-top: 15px; -webkit-overflow-scrolling: touch;
         }
         .program-table {
-            width: 100%; border-collapse: collapse; font-size: 13px;
+            width: 100%; border-collapse: collapse; font-size: 12px; min-width: 600px;
         }
         .program-table th {
             background-color: var(--primary); color: white; font-weight: bold;
-            padding: 10px; border: 1px solid var(--border-color); text-align: center;
+            padding: 8px; border: 1px solid var(--border-color); text-align: center;
         }
         .program-table td {
-            padding: 8px 6px; border: 1px solid var(--border-color); text-align: center;
+            padding: 8px 5px; border: 1px solid var(--border-color); text-align: center;
         }
         .program-table tr:nth-child(even) { background-color: #f8fafc; }
         .program-table tr.highlight-current-row {
@@ -198,19 +245,35 @@
 
         /* LEGENDA ABBREVIAZIONI */
         .legend-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 10px; background: #edf2f7; padding: 15px; border-radius: 12px; margin-top: 20px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px; background: #edf2f7; padding: 12px; border-radius: 12px; margin-top: 20px;
         }
         .legend-item {
-            background: white; padding: 6px 10px; border-radius: 6px;
-            border: 1px solid var(--border-color); display: flex; justify-content: space-between; font-size: 13px;
+            background: white; padding: 6px 8px; border-radius: 6px;
+            border: 1px solid var(--border-color); display: flex; justify-content: space-between; font-size: 12px;
         }
         .legend-abbr { font-weight: bold; color: var(--accent); }
+
+        /* RESPONSIVITÀ PER DISPOSITIVI MOBILI STRETTI */
+        @media (max-width: 480px) {
+            body { padding: 8px; }
+            h1 { font-size: 20px; }
+            .nav-tabs { border-radius: 8px; }
+            .tab-link { font-size: 11px; padding: 10px 5px; }
+            .assigned-chapters { font-size: 18px; }
+            .current-date-display { font-size: 12px; }
+            button { padding: 8px 10px; font-size: 12px; }
+            .calendar-preview { padding: 10px; }
+            .calendar-title { font-size: 13px; }
+            .weekdays-grid { font-size: 9px; }
+            .calendar-day { font-size: 11px; min-height: 35px; }
+            .calendar-day .mini-week { font-size: 7px; }
+        }
 
         /* REGOLE DI STAMPA */
         @media print {
             body { background: white; color: black; padding: 0; }
-            .nav-tabs, .navigation, .editor-zone, .calendar-preview, .assigned-reading-box, .bible-iframe-container, .no-print, h1 {
+            .nav-tabs, .navigation, .editor-zone, .calendar-preview, .assigned-reading-box, .mac-window-container, .no-print, h1 {
                 display: none !important;
             }
             .container { max-width: 100%; margin: 0; padding: 0; }
@@ -243,8 +306,18 @@
             <div class="assigned-chapters" id="assignedChaptersTarget">Caricamento capitoli...</div>
         </div>
 
-        <div class="bible-iframe-container">
-            <iframe class="bible-iframe" id="bibleViewerFrame" src="about:blank"></iframe>
+        <div class="mac-window-container" id="macBibleWindow">
+            <div class="mac-titlebar">
+                <div class="mac-buttons">
+                    <div class="mac-dot close" id="macBtnClose" title="Ripristina"></div>
+                    <div class="mac-dot minimize" id="macBtnMinimize" title="Contrai finestra"></div>
+                    <div class="mac-dot maximize" id="macBtnMaximize" title="Rendi grande"></div>
+                </div>
+                <div style="margin-left: 15px; font-size: 11px; color: #555; font-weight: 500;">La Parola.net</div>
+            </div>
+            <div class="bible-iframe-wrapper">
+                <iframe class="bible-iframe" id="bibleViewerFrame" src="about:blank"></iframe>
+            </div>
         </div>
 
         <div class="navigation">
@@ -275,7 +348,7 @@
                 <button id="btnNextMonth" class="calendar-nav-btn">Mese Succ. ▶</button>
             </div>
             <div class="weekdays-grid">
-                <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
+                <div>Lu</div><div>Ma</div><div>Me</div><div>Gi</div><div>Ve</div><div>Sa</div><div>Do</div>
             </div>
             <div class="days-grid" id="calendarDaysGrid"></div>
         </div>
@@ -283,20 +356,20 @@
 
     <div id="programma-tab" class="tab-content">
         <h2>Tabella Annuale delle Letture</h2>
-        <p class="no-print" style="color: #666; font-size: 14px;">Istruzione: Per stampare questo schema comprensivo di legenda su carta A4, premi semplicemente <strong>Ctrl + P</strong> (Windows) o <strong>Cmd + P</strong> (Mac) sulla tastiera.</p>
+        <p class="no-print" style="color: #666; font-size: 13px;">Istruzione: Per stampare questo schema comprensivo di legenda su carta A4, premi semplicemente <strong>Ctrl + P</strong> (Windows) o <strong>Cmd + P</strong> (Mac) sulla tastiera.</p>
         
         <div class="program-table-container">
             <table class="program-table">
                 <thead>
                     <tr>
                         <th>Sett.</th>
-                        <th>Lunedì<br><span style="font-weight:normal; font-size:11px;">(Legge)</span></th>
-                        <th>Martedì<br><span style="font-weight:normal; font-size:11px;">(Storia)</span></th>
-                        <th>Mercoledì<br><span style="font-weight:normal; font-size:11px;">(Salmi)</span></th>
-                        <th>Giovedì<br><span style="font-weight:normal; font-size:11px;">(Poesia)</span></th>
-                        <th>Venerdì<br><span style="font-weight:normal; font-size:11px;">(Profezia)</span></th>
-                        <th>Sabato<br><span style="font-weight:normal; font-size:11px;">(Vangeli)</span></th>
-                        <th>Domenica<br><span style="font-weight:normal; font-size:11px;">(Epistole)</span></th>
+                        <th>Lunedì<br><span style="font-weight:normal; font-size:10px;">(Legge)</span></th>
+                        <th>Martedì<br><span style="font-weight:normal; font-size:10px;">(Storia)</span></th>
+                        <th>Mercoledì<br><span style="font-weight:normal; font-size:10px;">(Salmi)</span></th>
+                        <th>Giovedì<br><span style="font-weight:normal; font-size:10px;">(Poesia)</span></th>
+                        <th>Venerdì<br><span style="font-weight:normal; font-size:10px;">(Profezia)</span></th>
+                        <th>Sabato<br><span style="font-weight:normal; font-size:10px;">(Vangeli)</span></th>
+                        <th>Domenica<br><span style="font-weight:normal; font-size:10px;">(Epistole)</span></th>
                     </tr>
                 </thead>
                 <tbody id="tableBodyTarget">
@@ -337,11 +410,9 @@
         "2Ts": "2 Tessalonicesi", "1Tm": "1 Timoteo", "2Tm": "2 Timoteo", "Tt": "Tito", "Tb": "Tobia", "Zc": "Zaccaria"
     };
 
-    // ORDINE ESATTO COLONNA PER COLONNA PRESO DALLA TUA FOTO DI CARTA
+    // Ordine identico al tuo foglio di carta originale
     const ordineLegendaPersonalizzato = [
-        // Prima colonna del foglio
         "Ab", "Abd", "Ag", "Am", "Ap", "At", "Bar", "Ct", "Col", "1Cor", "2Cor", "1Cr", "2Cr", "Dn", "Dt", "Eb", "Ef", "Esd", "Es", "Est", "Ez", "Fm", "Fil", "Gal", "Gn", "Ger", "Gc", "Gb", "Gl", "Gio", "GS", "Gv", "1Gv", "2Gv", "3Gv", "Gd", "Gdc",
-        // Seconda colonna del foglio
         "Gdt", "Is", "Lam", "LGer", "Lv", "Lc", "1Mec", "2Mec", "Ml", "Mc", "Mt", "Mic", "Na", "Ne", "Nm", "Os", "1Pt", "2Pt", "Pr", "Qo", "1Re", "2Re", "Rm", "Rt", "Sal", "1Sam", "2Sam", "Sap", "Sir", "Sof", "1Ts", "2Ts", "1Tm", "2Tm", "Tt", "Tb", "Zc"
     ];
 
@@ -409,6 +480,26 @@
         document.getElementById(tabId).classList.add('active');
         event.currentTarget.classList.add('active');
     }
+
+    // --- LOGICA BOTTONI MAC (CONTRAI / RIDIMENSIONA) ---
+    document.getElementById('macBtnMinimize').onclick = () => {
+        // Accorcia e contrae la finestra della lettura
+        document.getElementById('macBibleWindow').style.height = "60px";
+    };
+
+    document.getElementById('macBtnMaximize').onclick = () => {
+        // Riporta alle dimensioni grandi
+        document.getElementById('macBibleWindow').style.height = "60px";
+        // Forza un piccolo reset del rendering su Safari/Chrome e riapre
+        setTimeout(() => {
+            document.getElementById('macBibleWindow').style.height = "600px";
+        }, 50);
+    };
+
+    document.getElementById('macBtnClose').onclick = () => {
+        // Ripristina l'altezza standard di base (400px come via di mezzo o 600)
+        document.getElementById('macBibleWindow').style.height = "450px";
+    };
 
     // --- FUNZIONALITÀ DI CALCOLO DATA E SETTIMANE ---
     function getWeekNumber(d) {
@@ -521,7 +612,7 @@
         }
     }
 
-    // --- CREAZIONE INTERFACCIA DEL CALENDARIO ---
+    // --- CREAZIONE INTERFACCIA DEL CALENDARIO ADATTIVO ---
     function renderCalendarGrid() {
         const gridContainer = document.getElementById('calendarDaysGrid');
         const monthTitle = document.getElementById('calendarMonthTitle');
@@ -557,7 +648,7 @@
             if (hasContent) dayCell.classList.add('has-content');
 
             const numSettimana = getWeekNumber(loopDate);
-            dayCell.innerHTML = `${day} <span class="mini-week">sett. ${numSettimana}</span>`;
+            dayCell.innerHTML = `${day} <span class="mini-week">s.${numSettimana}</span>`;
 
             dayCell.onclick = () => {
                 currentDate = new Date(loopDate);
@@ -583,7 +674,7 @@
             for(let i=0; i<7; i++) {
                 let cellData = riga[i];
                 if(i === 1 && riga[7]) { 
-                    cellData += `<br><span style="color:#e74c3c; font-size:11px;">+ ${riga[7]}</span>`;
+                    cellData += `<br><span style="color:#e74c3c; font-size:10px;">+ ${riga[7]}</span>`;
                 }
                 tdHTML += `<td>${cellData}</td>`;
             }
@@ -625,7 +716,7 @@
             const pass = prompt("Inserisci la password segreta per modificare:");
             if (pass === SECRET_PASSWORD) {
                 IS_ADMIN = true;
-                adminBtn.textContent = "🔓 Modalità Scrittura Attiva";
+                adminBtn.textContent = "🔓 Scrittura Attiva";
                 adminBtn.classList.add('logged');
                 inputReadings.disabled = false;
                 inputComment.disabled = false;
