@@ -67,7 +67,7 @@
             display: block;
         }
 
-        /* BOX AUTOMATICO PROGRAMMA DEL GIORNO */
+        /* BOX AUTOMATICO PROGRAMMA DEL GIORMO */
         .assigned-reading-box {
             background: var(--card);
             border-left: 5px solid var(--accent);
@@ -89,7 +89,7 @@
             color: var(--accent);
         }
 
-        /* CONTENITORE FINESTRA STILE MACMACOS */
+        /* CONTENITORE FINESTRA STILE MACOS */
         .mac-window-container {
             width: 100%;
             border-radius: 12px;
@@ -99,7 +99,7 @@
             border: 1px solid var(--border-color);
             margin-bottom: 25px;
             transition: height 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            height: 600px; /* Altezza di default */
+            height: 600px;
         }
         
         /* BARRA DEI BOTTONI A SEMAFORO */
@@ -179,7 +179,7 @@
         textarea { resize: vertical; min-height: 100px; }
         .status-saved { color: #27ae60; font-size: 13px; font-weight: bold; display: none; }
         
-        /* CALENDARIO REINTEGRATO E ADATTIVO PER DISPOSITIVI MOBILI */
+        /* CALENDARIO ADATTIVO */
         .calendar-preview {
             background: var(--card); padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             width: 100%; box-sizing: border-box;
@@ -254,7 +254,7 @@
         }
         .legend-abbr { font-weight: bold; color: var(--accent); }
 
-        /* RESPONSIVITÀ PER DISPOSITIVI MOBILI STRETTI */
+        /* RESPONSIVITÀ */
         @media (max-width: 480px) {
             body { padding: 8px; }
             h1 { font-size: 20px; }
@@ -294,18 +294,22 @@
     <h1>Tracker Lettura Biblica <span id="adminBtn" class="admin-badge">🔒 Sblocca Scrittura</span></h1>
     <div class="subtitle">Diario di lettura pubblico (Sola lettura per gli ospiti)</div>
 
+    <!-- Menu a Schede -->
     <ul class="nav-tabs">
         <li class="tab-link active" onclick="switchTab(event, 'diario-tab')">📖 Lettura & Diario di Oggi</li>
         <li class="tab-link" onclick="switchTab(event, 'programma-tab')">📋 Programma Completo & Legenda</li>
     </ul>
 
+    <!-- SCHEDA 1 -->
     <div id="diario-tab" class="tab-content active">
         
+        <!-- Box Capitoli Assegnati -->
         <div class="assigned-reading-box">
             <div class="assigned-reading-title" id="assignedCategoryTitle">Programma di Oggi: Legge</div>
             <div class="assigned-chapters" id="assignedChaptersTarget">Caricamento capitoli...</div>
         </div>
 
+        <!-- Finestra macOS per La Parola.net -->
         <div class="mac-window-container" id="macBibleWindow">
             <div class="mac-titlebar">
                 <div class="mac-buttons">
@@ -320,12 +324,14 @@
             </div>
         </div>
 
+        <!-- Navigazione Date -->
         <div class="navigation">
             <button id="btnPrev">◀ Ieri</button>
             <div class="current-date-display" id="dateDisplay">Caricamento...</div>
             <button id="btnNext">Domani ▶</button>
         </div>
 
+        <!-- Zona Editor Diario -->
         <div class="editor-zone">
             <div class="input-group">
                 <label for="inputReadings">📖 Capitoli letti oggi:</label>
@@ -341,6 +347,7 @@
             </div>
         </div>
 
+        <!-- Griglia Calendario -->
         <div class="calendar-preview">
             <div class="calendar-header">
                 <button id="btnPrevMonth" class="calendar-nav-btn">◀ Mese Prec.</button>
@@ -354,9 +361,10 @@
         </div>
     </div>
 
+    <!-- SCHEDA 2 -->
     <div id="programma-tab" class="tab-content">
         <h2>Tabella Annuale delle Letture</h2>
-        <p class="no-print" style="color: #666; font-size: 13px;">Istruzione: Per stampare questo schema comprensivo di legenda su carta A4, premi semplicemente <strong>Ctrl + P</strong> (Windows) o <strong>Cmd + P</strong> (Mac) sulla tastiera.</p>
+        <p class="no-print" style="color: #666; font-size: 13px;">Istruzione: Per stampare questo schema comprensivo di legenda su carta A4, premi semplicemente <strong>Ctrl + P</strong> o <strong>Cmd + P</strong> sulla tastiera.</p>
         
         <div class="program-table-container">
             <table class="program-table">
@@ -373,18 +381,19 @@
                     </tr>
                 </thead>
                 <tbody id="tableBodyTarget">
-                    </tbody>
+                    <!-- JavaScript -->
+                </tbody>
             </table>
         </div>
 
         <h2 style="margin-top: 35px;">Legenda Abbreviazioni Libri</h2>
         <div class="legend-grid" id="legendTarget">
-            </div>
+            <!-- JavaScript -->
+        </div>
     </div>
 </div>
 
 <script>
-    // --- CONFIGURAZIONE DATABASE ---
     const FIREBASE_URL = "https://tracker-biblico-default-rtdb.europe-west1.firebasedatabase.app/"; 
     const SECRET_PASSWORD = "Emanuele"; 
     
@@ -393,7 +402,6 @@
     let IS_ADMIN = false;
     let allDatabaseData = {}; 
 
-    // --- DIZIONARI E STRUTTURE DATI COMPRENSIVE ---
     const abbreviazioni = {
         "Ab": "Abacuc", "Abd": "Abdia", "Ag": "Aggeo", "Am": "Amos", "Ap": "Apocalisse", "At": "Atti",
         "Bar": "Baruc", "Ct": "Cantico dei Cantici", "Col": "Colossesi", "1Cor": "1 Corinzi", "2Cor": "2 Corinzi",
@@ -410,7 +418,6 @@
         "2Ts": "2 Tessalonicesi", "1Tm": "1 Timoteo", "2Tm": "2 Timoteo", "Tt": "Tito", "Tb": "Tobia", "Zc": "Zaccaria"
     };
 
-    // Ordine identico al tuo foglio di carta originale
     const ordineLegendaPersonalizzato = [
         "Ab", "Abd", "Ag", "Am", "Ap", "At", "Bar", "Ct", "Col", "1Cor", "2Cor", "1Cr", "2Cr", "Dn", "Dt", "Eb", "Ef", "Esd", "Es", "Est", "Ez", "Fm", "Fil", "Gal", "Gn", "Ger", "Gc", "Gb", "Gl", "Gio", "GS", "Gv", "1Gv", "2Gv", "3Gv", "Gd", "Gdc",
         "Gdt", "Is", "Lam", "LGer", "Lv", "Lc", "1Mec", "2Mec", "Ml", "Mc", "Mt", "Mic", "Na", "Ne", "Nm", "Os", "1Pt", "2Pt", "Pr", "Qo", "1Re", "2Re", "Rm", "Rt", "Sal", "1Sam", "2Sam", "Sap", "Sir", "Sof", "1Ts", "2Ts", "1Tm", "2Tm", "Tt", "Tb", "Zc"
@@ -473,7 +480,6 @@
         ["Dt 32-34", "Est 6-10", "Sal 148-150", "Ct 7-8", "Ap 18-22", "At 27-28", "Gd"]
     ];
 
-    // --- LOGICA CAMBIO SCHEDE (TAB) ---
     function switchTab(event, tabId) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('active'));
@@ -481,27 +487,21 @@
         event.currentTarget.classList.add('active');
     }
 
-    // --- LOGICA BOTTONI MAC (CONTRAI / RIDIMENSIONA) ---
     document.getElementById('macBtnMinimize').onclick = () => {
-        // Accorcia e contrae la finestra della lettura
         document.getElementById('macBibleWindow').style.height = "60px";
     };
 
     document.getElementById('macBtnMaximize').onclick = () => {
-        // Riporta alle dimensioni grandi
         document.getElementById('macBibleWindow').style.height = "60px";
-        // Forza un piccolo reset del rendering su Safari/Chrome e riapre
         setTimeout(() => {
             document.getElementById('macBibleWindow').style.height = "600px";
         }, 50);
     };
 
     document.getElementById('macBtnClose').onclick = () => {
-        // Ripristina l'altezza standard di base (400px come via di mezzo o 600)
         document.getElementById('macBibleWindow').style.height = "450px";
     };
 
-    // --- FUNZIONALITÀ DI CALCOLO DATA E SETTIMANE ---
     function getWeekNumber(d) {
         d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
         d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
@@ -521,22 +521,18 @@
     function preparaQueryLaParola(testoLettura) {
         if (!testoLettura) return "";
         let pulito = testoLettura.trim();
-        
         if (pulito.includes("-")) {
             let partiTrattino = pulito.split("-");
             let primaParte = partiTrattino[0].trim(); 
-            let secondaParte = partiTrattino[1].trim(); 
-            
             let ultimoSpazioIdx = primaParte.lastIndexOf(" ");
             if (ultimoSpazioIdx !== -1) {
                 let nomeLibro = primaParte.substring(0, ultimoSpazioIdx).trim();
-                pulito = primaParte + " - " + nomeLibro + " " + secondaParte;
+                pulito = primaParte + " - " + nomeLibro + " " + partiTrattino[1].trim();
             }
         }
         return pulito.replace(/ /g, "+");
     }
 
-    // --- ACQUISIZIONE E CARICAMENTO REALE FIREBASE ---
     async function fetchAllData() {
         try {
             const response = await fetch(`${FIREBASE_URL}/letture.json`);
@@ -545,7 +541,7 @@
             loadDayData();
             popolaProgrammaCompleto();
         } catch (error) {
-            console.error("Errore nel caricamento dei dati dal cloud:", error);
+            console.error(error);
         }
     }
 
@@ -568,51 +564,35 @@
         document.getElementById('assignedChaptersTarget').innerText = capitoliAutomatici;
 
         const queryFormattata = preparaQueryLaParola(programmaTutteSettimane[settAssegnata - 1][dayOfWeekIdx]);
-        const urlLetturaDiretta = `https://www.laparola.net/testo.php?riferimento=${queryFormattata}`;
-        document.getElementById('bibleViewerFrame').src = urlLetturaDiretta;
+        document.getElementById('bibleViewerFrame').src = `https://www.laparola.net/testo.php?riferimento=${queryFormattata}`;
 
         const dayData = allDatabaseData[key];
-        
         if (dayData) {
             inputReadings.value = dayData.readings || '';
             inputComment.value = dayData.comment || '';
         } else {
-            if (IS_ADMIN) {
-                inputReadings.value = capitoliAutomatici;
-                inputComment.value = '';
-            } else {
-                inputReadings.value = '';
-                inputComment.value = '';
-            }
+            inputReadings.value = IS_ADMIN ? capitoliAutomatici : '';
+            inputComment.value = '';
         }
         renderCalendarGrid();
     }
 
     async function saveDayData() {
         if (!IS_ADMIN) return;
-        
         const key = formatDateKey(currentDate);
-        const dataToSave = {
-            readings: inputReadings.value,
-            comment: inputComment.value
-        };
-
+        const dataToSave = { readings: inputReadings.value, comment: inputComment.value };
         allDatabaseData[key] = dataToSave;
-
         try {
-            await fetch(`${FIREBASE_URL}/letture/${key}.json`, {
-                method: 'PUT',
-                body: JSON.stringify(dataToSave)
-            });
+            await fetch(`${FIREBASE_URL}/letture/${key}.json`, { method: 'PUT', body: JSON.stringify(dataToSave) });
             saveStatus.style.display = 'inline';
             setTimeout(() => { saveStatus.style.display = 'none'; }, 1000);
             renderCalendarGrid();
         } catch (error) {
-            alert("Errore durante il salvataggio online!");
+            alert("Errore online!");
         }
     }
 
-    // --- CREAZIONE INTERFACCIA DEL CALENDARIO ADATTIVO ---
+    /* FIX ALLINEAMENTO CALENDARIO: startDayIndex corretto per lunedì = 0 */
     function renderCalendarGrid() {
         const gridContainer = document.getElementById('calendarDaysGrid');
         const monthTitle = document.getElementById('calendarMonthTitle');
@@ -625,7 +605,7 @@
         monthTitle.textContent = nomeMese.charAt(0).toUpperCase() + nomeMese.slice(1);
 
         const firstDayOfMonth = new Date(year, month, 1);
-        let startDayIndex = firstDayOfMonth.getDay() - 1;
+        let startDayIndex = firstDayOfMonth.getDay() - 1; 
         if (startDayIndex === -1) startDayIndex = 6; 
 
         const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
@@ -654,12 +634,10 @@
                 currentDate = new Date(loopDate);
                 loadDayData();
             };
-
             gridContainer.appendChild(dayCell);
         }
     }
 
-    // --- POPOLAMENTO DI INTERFACCIA DELLA TABELLA COMPLETA ---
     function popolaProgrammaCompleto() {
         const tbody = document.getElementById('tableBodyTarget');
         const settCorrenteInTempoReale = getWeekNumber(new Date());
@@ -667,15 +645,11 @@
 
         programmaTutteSettimane.forEach((riga, idx) => {
             const tr = document.createElement('tr');
-            if (idx === (settCorrenteInTempoReale - 1)) {
-                tr.className = 'highlight-current-row'; 
-            }
+            if (idx === (settCorrenteInTempoReale - 1)) tr.className = 'highlight-current-row'; 
             let tdHTML = `<td><strong>${idx + 1}</strong></td>`;
             for(let i=0; i<7; i++) {
                 let cellData = riga[i];
-                if(i === 1 && riga[7]) { 
-                    cellData += `<br><span style="color:#e74c3c; font-size:10px;">+ ${riga[7]}</span>`;
-                }
+                if(i === 1 && riga[7]) cellData += `<br><span style="color:#e74c3c; font-size:10px;">+ ${riga[7]}</span>`;
                 tdHTML += `<td>${cellData}</td>`;
             }
             tr.innerHTML = tdHTML;
@@ -684,7 +658,6 @@
 
         const legendContainer = document.getElementById('legendTarget');
         legendContainer.innerHTML = '';
-        
         ordineLegendaPersonalizzato.forEach(chiave => {
             if (abbreviazioni[chiave]) {
                 const voce = document.createElement('div');
@@ -695,15 +668,8 @@
         });
     }
 
-    // --- INTERAZIONE PULSANTI E CONTROLLI ---
-    document.getElementById('btnPrevMonth').onclick = () => {
-        calendarViewDate.setMonth(calendarViewDate.getMonth() - 1);
-        renderCalendarGrid();
-    };
-    document.getElementById('btnNextMonth').onclick = () => {
-        calendarViewDate.setMonth(calendarViewDate.getMonth() + 1);
-        renderCalendarGrid();
-    };
+    document.getElementById('btnPrevMonth').onclick = () => { calendarViewDate.setMonth(calendarViewDate.getMonth() - 1); renderCalendarGrid(); };
+    document.getElementById('btnNextMonth').onclick = () => { calendarViewDate.setMonth(calendarViewDate.getMonth() + 1); renderCalendarGrid(); };
 
     adminBtn.onclick = () => {
         if (IS_ADMIN) {
@@ -713,17 +679,15 @@
             inputReadings.disabled = true;
             inputComment.disabled = true;
         } else {
-            const pass = prompt("Inserisci la password segreta per modificare:");
+            const pass = prompt("Password:");
             if (pass === SECRET_PASSWORD) {
                 IS_ADMIN = true;
                 adminBtn.textContent = "🔓 Scrittura Attiva";
                 adminBtn.classList.add('logged');
                 inputReadings.disabled = false;
                 inputComment.disabled = false;
-                inputReadings.placeholder = "Es. Genesi 1-3";
-                inputComment.placeholder = "Cosa ti ha colpito oggi?";
             } else if (pass !== null) {
-                alert("Password errata!");
+                alert("Errata!");
             }
         }
         loadDayData();
@@ -732,22 +696,9 @@
     inputReadings.oninput = saveDayData;
     inputComment.oninput = saveDayData;
 
-    document.getElementById('btnPrev').onclick = () => { 
-        currentDate.setDate(currentDate.getDate() - 1); 
-        calendarViewDate = new Date(currentDate); 
-        loadDayData(); 
-    };
-    document.getElementById('btnNext').onclick = () => { 
-        currentDate.setDate(currentDate.getDate() + 1); 
-        calendarViewDate = new Date(currentDate); 
-        loadDayData(); 
-    };
-    document.getElementById('btnToday').onclick = () => { 
-        currentDate = new Date(); 
-        calendarViewDate = new Date(currentDate);
-        loadDayData();
-        renderCalendarGrid();
-    };
+    document.getElementById('btnPrev').onclick = () => { currentDate.setDate(currentDate.getDate() - 1); calendarViewDate = new Date(currentDate); loadDayData(); };
+    document.getElementById('btnNext').onclick = () => { currentDate.setDate(currentDate.getDate() + 1); calendarViewDate = new Date(currentDate); loadDayData(); };
+    document.getElementById('btnToday').onclick = () => { currentDate = new Date(); calendarViewDate = new Date(currentDate); loadDayData(); };
 
     fetchAllData();
 </script>
